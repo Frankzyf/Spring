@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qdu.order.dao.OrderMapper">
+   <resultMap type="com.qdu.order.bean.ComOrderBean" id="order">
+		<id column="id" property="id" />
+		<result column="order_num" property="orderNum" />
+		<result column="com_code" property="comCode" />
+		<result column="com_num" property="comNum" />
+		<result column="total_prices" property="total_prices" />
+	</resultMap>
+	<update id="updateOrder" parameterType="com.qdu.order.bean.ComOrderBean">
+        update com_order
+        <set>
+            <if test="comCode != null">com_code=#{comCode},</if>
+            <if test="comNum != null">com_num=#{comNum},</if>
+            <if test="total_prices != null">total_prices=#{total_prices},</if>
+        </set>
+        where order_num =#{orderNum}
+    </update>
+	
+	<delete id = "deleteByCode" parameterType="com.qdu.order.bean.ComOrderBean" >
+	  delete from com_order where order_num=#{orderNum}
+	</delete>
+	
+	<insert id = "insert"  parameterType="com.qdu.order.bean.ComOrderBean" >
+	  insert into com_order(order_num,com_code,com_num,total_prices)  value(#{orderNum},#{comCode},#{comNum},#{total_prices})
+	</insert>
+	 
+	<select id="selectByCode" resultMap="order">
+	   select * from com_order where order_num = #{OrderNum}
+	</select>
+	
+	<select id="count" resultType="Integer">
+	select count(*) from com_order
+	</select>
+	
+	<select id="selectAllss" resultMap="order">
+	select * from com_order
+		<where>
+			<if test="oo.orderNum != null and oo.orderNum != ''">
+				and order_num like "%"#{oo.orderNum}"%"
+			</if>
+			<if test="oo.comCode != null and oo.comCode != ''">
+				and com_code like "%"#{oo.comCode}"%"
+			</if>
+		</where>
+		order by id desc limit #{before},#{after} 
+	</select>
+</mapper>

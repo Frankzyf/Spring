@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qdu.order.dao.ICartsDao">
+	<resultMap type="com.qdu.order.bean.CartsBean" id="cartsMap">
+		<id column="id" property="id" />
+		<id column="account" property="account" />
+		<result column="com_code" property="comCode" />
+		<result column="com_num" property="comNum" />
+		<result column="total_prices" property="totalPrice" />
+		<result column="com_name" property="comName" />
+	</resultMap>
+	<resultMap type="com.qdu.order.bean.ComOrderBean"
+		id="comOrder">
+		<id column="id" property="id" />
+		<id column="order_num" property="orderNum" />
+		<result column="com_code" property="comCode" />
+		<result column="com_num" property="comNum" />
+		<result column="total_prices" property="totalPrice" />
+	</resultMap>
+	
+	<resultMap type="com.qdu.order.bean.OrderInfoBean"
+		id="info">
+		<id column="id" property="id" />
+		<id column="order_num" property="orderNum" />
+		<result column="account" property="account" />
+		<result column="time" property="time" />
+		<result column="delivery_addr" property="deliveryAddr" />
+		<result column="status" property="status" />
+	</resultMap>
+	<insert id="insert" parameterType="com.qdu.order.bean.CartsBean">
+	    insert into com_car(account,com_code,com_num,total_prices,com_name) values(#{account},#{comCode},#{comNum},#{totalPrice},#{comName})
+	</insert>
+	
+	<select id="selectAllComInfo" resultMap="info">
+	    select * from order_info
+	</select>
+	
+	<delete id="deleteCartsByCode" parameterType="java.util.List">
+	   delete from com_car where com_code in
+	   <foreach collection="comCodes" item="comCode" open="(" separator="," close=")">
+	    #{comCode}
+	   </foreach>
+	</delete>
+	
+	<select id="selectOrderNumByComCode"
+		parameterType="java.util.List" resultMap="comOrder">
+		select order_num from com_order where com_code in
+		<foreach collection="comCodes" item="comCode" index="index"
+			open="(" separator="," close=")">
+			#{comCode,jdbcType=VARCHAR}
+		</foreach>
+	</select>
+
+	<insert id="insertOrderInfo" parameterType="java.util.List">
+		insert into order_info(order_num,account,time,delivery_addr,status)
+		values
+		<foreach collection="orderInfo" item="or" separator=",">
+			(#{or.orderNum},#{or.account},#{or.time},#{or.deliveryAddr},#{or.status})
+		</foreach>
+	</insert>
+
+	<insert id="insertComOrder" parameterType="java.util.List">
+		insert into com_order(order_num,com_code,com_num,total_prices) values
+		<foreach collection="coms" item="coms" separator=",">
+			(#{coms.orderNum},#{coms.comCode},#{coms.comNum},#{coms.total_prices})
+		</foreach>
+	</insert>
+
+	<select id="selectComByAccount" resultMap="cartsMap">
+		select * from com_car where account = #{account}
+	</select>
+
+	<select id="selectComByComCode" parameterType="java.util.List"
+		resultMap="cartsMap">
+		select * from com_car where com_code in
+		<foreach collection="comCodes" item="comCode" index="index"
+			open="(" separator="," close=")">
+			#{comCode,jdbcType=VARCHAR}
+		</foreach>
+	</select>
+
+
+	<update id="updateCarts"
+		parameterType="com.qdu.order.bean.CartsBean">
+		update com_car set com_num=#{comNum} where com_code=#{comCode}
+	</update>
+
+</mapper>

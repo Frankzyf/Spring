@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qdu.coms.dao.IComInfoDao">
+
+	<resultMap type="com.qdu.coms.bean.ComInfoBean" id="cominfo">
+		<id column="com_code" property="comCode" />
+		<result column="com_name" property="comName" />
+		<result column="unit_price" property="unitPrice" />
+		<result column="com_descr" property="comDescr" />
+		<result column="goods_code" property="goodsCode" />
+		<result column="img_url" property="comImg.imgUrl" />
+	</resultMap>
+	<resultMap type="com.qdu.coms.bean.ComImgBean" id="comimg">
+		<id column="id" property="id" />
+		<id column="com_code" property="comCode" />
+		<result column="img_url" property="imgUrl" />
+		<result column="img_type" property="imgType" />
+	</resultMap>
+	<resultMap type="com.qdu.coms.bean.ComClassifyBean" id="cc">
+	    <id column="id" property="id" />
+		<id column="code" property="code" />
+		<result column="name" property="name" />
+		<result column="descr" property="descr" />
+		<result column="parentCode" property="parentCode" />
+	</resultMap>
+	
+    <select id="findImgByCode" resultMap="comimg">
+      select * from com_img where com_code=#{comCode} and img_type="页面展示"
+    </select>
+  
+    <select id="findComByCode" resultMap="cominfo">
+      select * from com_info where com_code = #{comCode}
+    </select>
+     
+    <select id="findComAndImg" resultMap="cominfo">
+       select a.*,b.img_url from com_info a,com_img b where  b.img_type="页面展示" and a.com_code=b.com_code and b.com_code in (select com_code from com_info where com_name like "%"#{searchName,jdbcType = VARCHAR}"%")
+    </select>
+
+	<select id="findAllComs" resultMap="cominfo">
+		select
+		id,com_code,com_name,unit_price,com_descr,stock,type,goods_code from
+		com_info
+	</select>
+
+	<select id="getGoodsCode" resultMap="cc">
+		select * from com_classify
+	</select>
+
+	<insert id="insertComInfo"
+		parameterType="com.qdu.coms.bean.ComInfoBean">
+		insert into
+		com_info(com_code,com_name,unit_price,com_descr,stock,type,goods_code)
+		values(#{comCode},#{comName},#{unitPrice},#{comDescr},#{stock},#{type},#{goodsCode})
+	</insert>
+
+	<select id="getComCode" resultMap="cominfo">
+		select com_code from com_info
+	</select>
+
+	<select id="getComInfoById" resultMap="cominfo">
+		select
+		com_code,com_name,unit_price,com_descr,stock,type,goods_code from
+		com_info where com_code = #{comCode}
+	</select>
+
+	<update id="updateComInfo"
+		parameterType="com.qdu.coms.bean.ComInfoBean">
+		update com_info set
+		com_name=#{comName},unit_price=#{unitPrice},com_descr=#{comDescr},stock=#{stock},type=#{type},goods_code=#{goodsCode}
+		where com_code=#{comCode}
+	</update>
+
+	<delete id="deleteByCode"
+		parameterType="com.qdu.coms.bean.ComInfoBean">
+		delete from com_info where com_code=#{comCode}
+	</delete>
+
+	<delete id="deleteByCodes"
+		parameterType="java.util.List">
+
+		delete from com_info
+		<where>
+			<if test="comCodes!= null"> 
+               com_code in 
+            <foreach collection="comCodes" item="comCode" index="index"
+                open="(" separator="," close=")" >
+                #{comCode,jdbcType=VARCHAR}
+            </foreach>
+    
+			</if>
+		</where>
+	</delete>
+	
+</mapper>

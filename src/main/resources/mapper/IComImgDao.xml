@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qdu.coms.dao.IComImgDao">
+
+    <resultMap type="com.qdu.coms.bean.ComImgBean" id="comImg">
+       <id column="id" property="id" />
+       <id column="com_code" property="comCode" />
+       <result column="img_url" property="imgUrl"/>
+       <result column="img_type" property="imgType"/>
+    </resultMap>
+    <delete id="deleteImg">
+       delete from com_img where com_code=#{comCode} and img_type=#{imgType}
+    </delete>
+    
+    <insert id="saveImg"  parameterType="com.qdu.coms.bean.ComImgBean">
+      insert into com_img(com_code,img_url,img_type) 
+      value(#{comCode},#{imgUrl},#{imgType})
+    </insert>
+    
+    <select id="selectImgByCode" resultMap="comImg">
+       select * from com_img where com_code=#{comCode}
+    </select>
+    
+    <select id="selectImgByCodeAndType" parameterType="java.util.List" resultMap="comImg">
+       select * from com_img where img_type="页面展示" and com_code in 
+       <foreach collection="list" item="code" index="index" open="(" separator="," close=")" >
+           #{code,jdbcType=VARCHAR}      
+       </foreach>
+    </select>
+</mapper>

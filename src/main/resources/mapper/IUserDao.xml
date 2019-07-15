@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qdu.user.dao.IUserDao">
+     <resultMap type="com.qdu.user.bean.UserBean" id="user">
+       <id column="id" property="id"/>
+       <id column="account" property="account"/>
+       <result column="username" property="username"/>
+       <result column="password" property="password"/>
+       <result column="gender" property="gender"/>
+       <result column="admin" property="admin"/>
+     </resultMap>
+     <select id="checkLogin" resultMap="user">
+          select * from user where account=#{account} and password=#{password}
+     </select>
+</mapper>
